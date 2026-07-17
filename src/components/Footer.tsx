@@ -7,13 +7,13 @@ export const Footer: React.FC = () => {
       {/* Top Border Bar with Column Headers */}
       <div className={styles.topHeadersBar}>
         <div className={styles.headerCol}>LUCAS REIS</div>
-        <div className={styles.headerCol}><a href="https://instagram.com" target="_blank" rel="noreferrer">INSTAGRAM</a></div>
-        <div className={styles.headerCol}><a href="https://x.com" target="_blank" rel="noreferrer">X(TWITTER)</a></div>
-        <div className={styles.headerCol}><a href="https://linkedin.com" target="_blank" rel="noreferrer">LINKEDIN</a></div>
-        <div className={styles.headerCol}><a href="https://behance.net" target="_blank" rel="noreferrer">BEHANCE</a></div>
-        <div className={styles.headerCol}><a href="https://dribbble.com" target="_blank" rel="noreferrer">DRIBBLE</a></div>
-        <div className={styles.headerCol}><a href="https://youtube.com" target="_blank" rel="noreferrer">YOUTUBE</a></div>
-        <div className={styles.headerCol}><a href="https://facebook.com" target="_blank" rel="noreferrer">FACEBOOK</a></div>
+        <div className={styles.headerCol}><a href="#">INSTAGRAM</a></div>
+        <div className={styles.headerCol}><a href="#">X(TWITTER)</a></div>
+        <div className={styles.headerCol}><a href="#">LINKEDIN</a></div>
+        <div className={styles.headerCol}><a href="#">BEHANCE</a></div>
+        <div className={styles.headerCol}><a href="#">DRIBBLE</a></div>
+        <div className={styles.headerCol}><a href="#">YOUTUBE</a></div>
+        <div className={styles.headerCol}><a href="#">FACEBOOK</a></div>
       </div>
 
       {/* Main Content Area */}
@@ -28,7 +28,7 @@ export const Footer: React.FC = () => {
 
         <div className={styles.rightCol}>
           <div className={styles.btnContainer}>
-            <a href="https://calendly.com" target="_blank" rel="noreferrer" className={styles.cornerTickBtn}>
+            <a href="#" className={styles.cornerTickBtn}>
               <span className={`${styles.tick} ${styles.tickTL}`}></span>
               <span className={`${styles.tick} ${styles.tickTR}`}></span>
               <span className={`${styles.tick} ${styles.tickBL}`}></span>

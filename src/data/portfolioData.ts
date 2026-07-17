@@ -46,12 +46,12 @@ export const PORTFOLIO_DATA = {
     ]
   },
   socials: [
-    { name: "Instagram", url: "https://instagram.com", short: "IG" },
-    { name: "X (Twitter)", url: "https://x.com", short: "X" },
-    { name: "LinkedIn", url: "https://linkedin.com", short: "LI" },
-    { name: "Behance", url: "https://behance.net", short: "BE" },
-    { name: "Dribbble", url: "https://dribbble.com", short: "DR" },
-    { name: "YouTube", url: "https://youtube.com", short: "YT" }
+    { name: "Instagram", url: "#", short: "IG" },
+    { name: "X (Twitter)", url: "#", short: "X" },
+    { name: "LinkedIn", url: "#", short: "LI" },
+    { name: "Behance", url: "#", short: "BE" },
+    { name: "Dribbble", url: "#", short: "DR" },
+    { name: "YouTube", url: "#", short: "YT" }
   ],
   principles: [
     {

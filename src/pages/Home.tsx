@@ -88,9 +88,9 @@ export const Home: React.FC = () => {
                 <span className={styles.counterLabel}>Selected Projects</span>
               </div>
               <div className={styles.socialOverlay}>
-                <a href="https://x.com" target="_blank" rel="noreferrer">X</a>
-                <a href="https://linkedin.com" target="_blank" rel="noreferrer">LI</a>
-                <a href="https://behance.net" target="_blank" rel="noreferrer">BE</a>
+                <a href="#">X</a>
+                <a href="#">LI</a>
+                <a href="#">BE</a>
               </div>
             </div>
           </div>
@@ -353,9 +353,9 @@ export const Home: React.FC = () => {
                       Speaking at design and tech conferences across Europe. Regular design contributor to industry panels and juries.
                     </p>
                     <div className={styles.experienceSocials}>
-                      <a href="https://linkedin.com" target="_blank" rel="noreferrer">LI</a>
-                      <a href="https://x.com" target="_blank" rel="noreferrer">X</a>
-                      <a href="https://instagram.com" target="_blank" rel="noreferrer">IG</a>
+                      <a href="#">LI</a>
+                      <a href="#">X</a>
+                      <a href="#">IG</a>
                     </div>
                   </div>
 
