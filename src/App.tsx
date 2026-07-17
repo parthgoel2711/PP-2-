@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import Lenis from "lenis";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
+import { Loader } from "./components/Loader";
 import { Home } from "./pages/Home";
 import { About } from "./pages/About";
 import { Projects } from "./pages/Projects";
@@ -21,11 +23,31 @@ const ScrollToTop = () => {
 };
 
 function App() {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+
   return (
     <Router>
+      <Loader />
       <ScrollToTop />
       <Navbar />
-      
+
       <main style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <AnimatePresence mode="wait">
           <Routes>

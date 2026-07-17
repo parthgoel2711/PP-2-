@@ -1,17 +1,72 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { PORTFOLIO_DATA } from "../data/portfolioData";
 import { ProjectCard } from "../components/ProjectCard";
 import { FAQ } from "../components/FAQ";
 import { Transition } from "../components/Transition";
 import styles from "./Home.module.css";
 
+// Animated counter hook
+function useCountUp(target: number, duration = 1.5) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    if (!inView) return;
+    let startTime: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+      else setCount(target);
+    };
+    requestAnimationFrame(step);
+  }, [inView, target, duration]);
+
+  return { count, ref };
+}
+
+// Stagger container variants
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.12 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: "easeOut" as const },
+  },
+};
+
+// Animated stat item
+const StatItem: React.FC<{ target: number; suffix?: string; label: string }> = ({ target, suffix = "", label }) => {
+  const { count, ref } = useCountUp(target);
+  return (
+    <div className={styles.statItem}>
+      <span className={styles.statNum} ref={ref}>{count}{suffix}</span>
+      <span className={styles.statLabel}>{label}</span>
+    </div>
+  );
+};
+
 export const Home: React.FC = () => {
   const featuredProjects = PORTFOLIO_DATA.projects.slice(0, 4);
   const [nyTime, setNyTime] = useState<string>("");
 
-
+  // Hero parallax
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "35%"]);
 
   useEffect(() => {
     const updateNYTime = () => {
@@ -24,17 +79,14 @@ export const Home: React.FC = () => {
         };
         const formatter = new Intl.DateTimeFormat("en-US", options);
         const parts = formatter.formatToParts(new Date());
-        
         const hour = parts.find(p => p.type === "hour")?.value || "12";
         const minute = parts.find(p => p.type === "minute")?.value || "00";
         const dayPeriod = parts.find(p => p.type === "dayPeriod")?.value || "PM";
-        
         setNyTime(`${hour} ${minute} ${dayPeriod.toUpperCase()}`);
       } catch (e) {
         setNyTime("12 00 PM");
       }
     };
-
     updateNYTime();
     const interval = setInterval(updateNYTime, 30000);
     return () => clearInterval(interval);
@@ -43,46 +95,69 @@ export const Home: React.FC = () => {
   return (
     <Transition>
       <div className={styles.home}>
-        {/* Fullscreen Hero Section styled exactly like Lurais */}
-        <section className={styles.heroSection}>
+        {/* Fullscreen Hero Section */}
+        <section className={styles.heroSection} ref={heroRef}>
           <div className={styles.heroCard}>
-            {/* Background Image Container */}
+            {/* Background Image with Parallax */}
             <div className={styles.bgContainer}>
-              <img src="/hero-bg.jpg" alt="Hero Background" className={styles.bgImage} />
+              <motion.img
+                src="/hero-bg.jpg"
+                alt="Hero Background"
+                className={styles.bgImage}
+                style={{ y: bgY }}
+              />
               <div className={styles.bgOverlay}></div>
             </div>
 
-            {/* Overlays */}
             {/* Header overlay */}
-            <div className={styles.heroHeader}>
+            <motion.div
+              className={styles.heroHeader}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.9, ease: [0.16, 1, 0.3, 1] }}
+            >
               <div className={styles.logoLabel}>LUCAS REIS</div>
               <a href={`mailto:${PORTFOLIO_DATA.profile.email}`} className={styles.mailLink}>
                 {PORTFOLIO_DATA.profile.email.toUpperCase()}
               </a>
               <div className={styles.headerRight}>
-                {/* Time Display stacked exactly like Lurais */}
                 <div className={styles.timeDisplay}>
                   <span className={styles.timeZone}>NEW YORK /</span>
                   <span className={styles.timeValue}>{nyTime}</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Mid roles overlay */}
-            <div className={styles.rolesList}>
+            <motion.div
+              className={styles.rolesList}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 2.0, ease: [0.16, 1, 0.3, 1] }}
+            >
               <span>Designer</span>
               <span>Creative Director</span>
               <span>AI Artist</span>
-            </div>
+            </motion.div>
 
-            {/* Huge Center Heading overlay */}
-            <div className={styles.bigHeadline}>
+            {/* Huge Center Heading */}
+            <motion.div
+              className={styles.bigHeadline}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.0, delay: 1.95, ease: [0.16, 1, 0.3, 1] }}
+            >
               <span className={styles.headlineWord}>Vision</span>
               <span className={styles.headlineWord}>Portfolio</span>
-            </div>
+            </motion.div>
 
             {/* Bottom details overlay */}
-            <div className={styles.heroBottomRow}>
+            <motion.div
+              className={styles.heroBottomRow}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 2.1, ease: [0.16, 1, 0.3, 1] }}
+            >
               <div className={styles.projectCounter}>
                 <span className={styles.counterNum}>/26</span>
                 <span className={styles.counterLabel}>Selected Projects</span>
@@ -92,7 +167,7 @@ export const Home: React.FC = () => {
                 <a href="#">LI</a>
                 <a href="#">BE</a>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           <div className={styles.heroFooter}>
@@ -100,40 +175,57 @@ export const Home: React.FC = () => {
           </div>
         </section>
 
-        {/* Scrollable Container containing the overlay cards */}
+        {/* Scrollable Container */}
         <div className={styles.scrollWrapper}>
-          
-          {/* Introduction Card (slides up over the Hero Card like a drawer) */}
+
+          {/* Introduction Card */}
           <section className={styles.introCardSection}>
             <div className={styles.introCard}>
-              
-              {/* Left Sidebar Column with Rotated Watermark tag and Divider line */}
               <div className={styles.cardSidebar}>
-                <div className={styles.verticalSidebarTag}>
+                <motion.div
+                  className={styles.verticalSidebarTag}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 0.85 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                >
                   /about me
-                </div>
+                </motion.div>
               </div>
 
-              {/* Right Main Content */}
               <div className={styles.cardInnerContent}>
-                
-                {/* Header boundary line */}
-                <div className={styles.cardHeaderBar}>
+                <motion.div
+                  className={styles.cardHeaderBar}
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                >
                   <span className={styles.headerIndex}>01</span>
                   <div className={styles.headerLine}></div>
                   <span className={styles.headerTag}>/INTRODUCTION</span>
-                </div>
+                </motion.div>
 
-                {/* Big Headline */}
-                <h2 className={styles.introHeadline}>
+                <motion.h2
+                  className={styles.introHeadline}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                >
                   I craft visual systems where design meets technology. <span className={styles.textGray}>My work blends human insight with machine precision —</span> without losing meaning.
-                </h2>
+                </motion.h2>
 
-                {/* Profile detail row with Slideshow */}
-                <div className={styles.profileBioRow}>
-                  <img 
-                    src="/lucas-portrait.jpg" 
-                    alt="Lucas Reis Portrait" 
+                <motion.div
+                  className={styles.profileBioRow}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                >
+                  <img
+                    src="/lucas-portrait.jpg"
+                    alt="Lucas Reis Portrait"
                     className={styles.profileAvatar}
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = "https://framerusercontent.com/images/hm1VWYjGDkxBl6xfaocPHEmz4.jpg";
@@ -142,8 +234,6 @@ export const Home: React.FC = () => {
                   <p className={styles.profileBioText}>
                     I am Lucas Reis — A.I. Artist, Designer, Art Director and Your Strategic Partner in Visual Innovation. I help brands, creators, and businesses transform abstract ideas into powerful visual narratives.
                   </p>
-
-                  {/* Resume button with corner ticks decoration */}
                   <div className={styles.resumeContainer}>
                     <a href="/resume.pdf" target="_blank" rel="noreferrer" className={styles.cornerTickBtn}>
                       <span className={`${styles.tick} ${styles.tickTL}`}></span>
@@ -153,7 +243,7 @@ export const Home: React.FC = () => {
                       RESUME
                     </a>
                   </div>
-                </div>
+                </motion.div>
 
                 <div className={styles.cardDivider}></div>
 
@@ -175,36 +265,51 @@ export const Home: React.FC = () => {
                     </div>
                   </div>
                 </div>
-
               </div>
-
             </div>
           </section>
 
-          {/* Featured Projects Card Section */}
+          {/* Featured Projects */}
           <section className={styles.projectsSection}>
             <div className={styles.projectsCard}>
-              
               <div className={styles.cardSidebar}>
-                <div className={styles.verticalSidebarTag}>
+                <motion.div
+                  className={styles.verticalSidebarTag}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 0.85 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                >
                   /featured
-                </div>
+                </motion.div>
               </div>
 
               <div className={styles.cardInnerContent}>
-                <div className={styles.cardHeaderBar}>
+                <motion.div
+                  className={styles.cardHeaderBar}
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                >
                   <span className={styles.headerIndex}>02</span>
                   <div className={styles.headerLine}></div>
                   <span className={styles.headerTag}>/FEATURED</span>
-                </div>
+                </motion.div>
 
-                <div className={styles.sectionHeader}>
+                <motion.div
+                  className={styles.sectionHeader}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                >
                   <h2 className={styles.bestWorksTitle}>.. best works</h2>
                   <Link to="/projects" className={styles.viewAllLink}>
                     View Archive
                     <ArrowRight size={16} />
                   </Link>
-                </div>
+                </motion.div>
 
                 <div className={styles.projectsGrid}>
                   {featuredProjects.map((project, index) => (
@@ -215,33 +320,54 @@ export const Home: React.FC = () => {
             </div>
           </section>
 
-          {/* Principles / Process Section Refactored to match Lurais mockups */}
+          {/* Principles Section */}
           <section className={styles.principlesSection}>
             <div className={styles.principlesCard}>
-              
               <div className={styles.cardSidebar}>
-                <div className={styles.verticalSidebarTag}>
+                <motion.div
+                  className={styles.verticalSidebarTag}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 0.85 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                >
                   /principles
-                </div>
+                </motion.div>
               </div>
 
               <div className={styles.cardInnerContent}>
-                <div className={styles.cardHeaderBar}>
+                <motion.div
+                  className={styles.cardHeaderBar}
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                >
                   <span className={styles.headerIndex}>03</span>
                   <div className={styles.headerLine}></div>
                   <span className={styles.headerTag}>/PHILOSOPHY</span>
-                </div>
+                </motion.div>
 
-                <div className={styles.principlesHeadlineRow}>
+                <motion.div
+                  className={styles.principlesHeadlineRow}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                >
                   <span className={styles.principlesSubtitle}>Formats are tailored for<br />web, social media, or print.</span>
                   <h2 className={styles.principlesTitle}>.. work principles</h2>
                   <span className={styles.principlesFocus}>Every project is tailored to the client and business</span>
-                </div>
+                </motion.div>
 
-                {/* Visual grid cards exactly matching Lurais */}
-                <div className={styles.principlesVisualGrid}>
-                  {/* Card 1: Transparency */}
-                  <div className={styles.transparencyCard}>
+                <motion.div
+                  className={styles.principlesVisualGrid}
+                  variants={containerVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-60px" }}
+                >
+                  <motion.div variants={itemVariants} className={styles.transparencyCard}>
                     <img src="/transparency.png" alt="Transparency bg" className={styles.principleBg} onError={(e) => {
                       (e.target as HTMLImageElement).src = "https://framerusercontent.com/images/MbOULKEWtjVEIBlPX4m8LgzvUq4.png";
                     }} />
@@ -249,10 +375,9 @@ export const Home: React.FC = () => {
                       <h3>Transparency</h3>
                       <p>we discuss goals and outcomes before starting</p>
                     </div>
-                  </div>
+                  </motion.div>
 
-                  {/* Card 2: Smart Aesthetics */}
-                  <div className={styles.smartCard}>
+                  <motion.div variants={itemVariants} className={styles.smartCard}>
                     <img src="/vr-glasses.png" alt="Smart aesthetics bg" className={styles.principleBg} onError={(e) => {
                       (e.target as HTMLImageElement).src = "https://framerusercontent.com/images/uHQ7Baalyd8GmCy1Qj9jHVeKco.png";
                     }} />
@@ -260,20 +385,18 @@ export const Home: React.FC = () => {
                       <span className={styles.badgeText}>Not beauty for its own sake, but storytelling and impact</span>
                       <h3>Smart aesthetics</h3>
                     </div>
-                  </div>
+                  </motion.div>
 
-                  {/* Card 3: Honesty Card */}
-                  <div className={styles.honestyCard}>
+                  <motion.div variants={itemVariants} className={styles.honestyCard}>
                     <div className={styles.honestyIcons}>
                       <span className={styles.iconK}>K</span>
                       <span className={styles.iconFlower}>🌸</span>
                       <span className={styles.iconSailboat}>⛵</span>
                     </div>
                     <h4>HONESTY ABOUT TECHNOLOGY</h4>
-                  </div>
+                  </motion.div>
 
-                  {/* Card 4: Value-Driven Design */}
-                  <div className={styles.valueCard}>
+                  <motion.div variants={itemVariants} className={styles.valueCard}>
                     <img src="/value-design.png" alt="Value design bg" className={styles.principleBg} onError={(e) => {
                       (e.target as HTMLImageElement).src = "https://framerusercontent.com/images/8bF2nQq9COJeBd7BfBPuMNZGFDI.png";
                     }} />
@@ -281,71 +404,77 @@ export const Home: React.FC = () => {
                       <h4>VALUE-DRIVEN DESIGN</h4>
                       <p>visuals serve your goals</p>
                     </div>
-                  </div>
+                  </motion.div>
 
-                  {/* Right side vertical column containing VR Clock card and Copyright card */}
                   <div className={styles.rightStackColumn}>
-                    {/* Card 5: VR clock */}
-                    <div className={styles.vrClockCard}>
+                    <motion.div variants={itemVariants} className={styles.vrClockCard}>
                       <div className={styles.vrClockHeader}>
                         <span>13:15</span>
                       </div>
                       <img src="https://framerusercontent.com/images/6DCUF0PWH8VnLBSsNhJNTRe2ozw.png" alt="VR VR" className={styles.vrClockBg} />
                       <p>I respect deadlines and take full ownership of quality.</p>
-                    </div>
+                    </motion.div>
 
-                    {/* Card 6: Copyright card */}
-                    <div className={styles.copyrightCard}>
+                    <motion.div variants={itemVariants} className={styles.copyrightCard}>
                       <div className={styles.copyrightSymbol}>©</div>
                       <p>I never use unlicensed work</p>
-                    </div>
+                    </motion.div>
                   </div>
-                </div>
-
+                </motion.div>
               </div>
             </div>
           </section>
 
-          {/* Experience Section Refactored to match Lurais experience mockup */}
+          {/* Experience Section */}
           <section className={styles.experienceSection}>
             <div className={styles.experienceCard}>
-              
               <div className={styles.cardSidebar}>
-                <div className={styles.verticalSidebarTag}>
+                <motion.div
+                  className={styles.verticalSidebarTag}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 0.85 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                >
                   /experience
-                </div>
+                </motion.div>
               </div>
 
               <div className={styles.cardInnerContent}>
-                <div className={styles.cardHeaderBar}>
+                <motion.div
+                  className={styles.cardHeaderBar}
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                >
                   <span className={styles.headerIndex}>04</span>
                   <div className={styles.headerLine}></div>
                   <span className={styles.headerTag}>/ABOUT</span>
-                </div>
+                </motion.div>
 
                 <div className={styles.experienceMainLayout}>
-                  {/* Left Column Stats */}
-                  <div className={styles.statsSidebar}>
-                    <div className={styles.statItem}>
-                      <span className={styles.statNum}>2</span>
-                      <span className={styles.statLabel}>awwwards</span>
-                    </div>
-                    <div className={styles.statItem}>
-                      <span className={styles.statNum}>1000</span>
-                      <span className={styles.statLabel}>lectures</span>
-                    </div>
-                    <div className={styles.statItem}>
-                      <span className={styles.statNum}>200+</span>
-                      <span className={styles.statLabel}>students</span>
-                    </div>
-                    <div className={styles.statItem}>
-                      <span className={styles.statNum}>460</span>
-                      <span className={styles.statLabel}>portfolio works</span>
-                    </div>
-                  </div>
+                  {/* Animated Stats */}
+                  <motion.div
+                    className={styles.statsSidebar}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <StatItem target={2} label="awwwards" />
+                    <StatItem target={1000} label="lectures" />
+                    <StatItem target={200} suffix="+" label="students" />
+                    <StatItem target={460} label="portfolio works" />
+                  </motion.div>
 
-                  {/* Middle Bio Info */}
-                  <div className={styles.experienceMiddle}>
+                  <motion.div
+                    className={styles.experienceMiddle}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                  >
                     <h3 className={styles.experienceHeadline}>
                       I'm Lucas Reis—I design with intent where <span className={styles.textGray}>clarity meets emotional impact, technology enhances</span>
                     </h3>
@@ -357,59 +486,59 @@ export const Home: React.FC = () => {
                       <a href="#">X</a>
                       <a href="#">IG</a>
                     </div>
-                  </div>
+                  </motion.div>
 
-                  {/* Right Speaker Photo */}
-                  <div className={styles.experienceRight}>
+                  <motion.div
+                    className={styles.experienceRight}
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+                  >
                     <img src="/lucas-portrait.jpg" alt="Lucas Reis speaking" className={styles.speakerPhoto} />
-                  </div>
+                  </motion.div>
                 </div>
 
-                {/* bottom facts and figures 2x2 grid layout */}
-                <div className={styles.factsGridContainer}>
-                  {/* Col 1 Row 1: Label */}
-                  <div className={styles.factCellTitle}>
-                    <span>/facts & figures</span>
-                  </div>
-
-                  {/* Col 2 Row 1: 108 projects */}
-                  <div className={styles.factCellCard}>
+                <motion.div
+                  className={styles.factsGridContainer}
+                  variants={containerVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-60px" }}
+                >
+                  <motion.div variants={itemVariants} className={styles.factCellTitle}>
+                    <span>/facts &amp; figures</span>
+                  </motion.div>
+                  <motion.div variants={itemVariants} className={styles.factCellCard}>
                     <div className={styles.factCellContent}>
                       <span className={styles.factCellNum}>108</span>
                       <span className={styles.factCellBullet}>•</span>
                       <span className={styles.factCellText}>Projects completed</span>
                     </div>
-                  </div>
-
-                  {/* Col 1 Row 2: 21 years */}
-                  <div className={styles.factCellCardWithBorder}>
+                  </motion.div>
+                  <motion.div variants={itemVariants} className={styles.factCellCardWithBorder}>
                     <div className={styles.factCellContent}>
                       <span className={styles.factCellNum}>21</span>
                       <span className={styles.factCellBullet}>•</span>
                       <span className={styles.factCellText}>Years of experience</span>
                     </div>
-                  </div>
-
-                  {/* Col 2 Row 2: 98 satisfied */}
-                  <div className={styles.factCellCardPlain}>
+                  </motion.div>
+                  <motion.div variants={itemVariants} className={styles.factCellCardPlain}>
                     <div className={styles.factCellContent}>
                       <span className={styles.factCellNum}>98</span>
                       <span className={styles.factCellBullet}>•</span>
                       <span className={styles.factCellText}>Satisfied clients</span>
                     </div>
-                  </div>
-                </div>
-
+                  </motion.div>
+                </motion.div>
               </div>
             </div>
           </section>
 
-          {/* FAQ Area (including Still Have Questions overlay) */}
+          {/* FAQ Area */}
           <div className={styles.faqCardWrapper}>
             <div className={styles.faqCardInner}>
               <FAQ />
-
-              {/* Still have questions cta box inside the FAQ card */}
               <div className={styles.stillQuestionsBox}>
                 <div className={styles.stillLeft}>
                   <h3>Still have questions?</h3>
@@ -427,8 +556,8 @@ export const Home: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
 
+        </div>
       </div>
     </Transition>
   );

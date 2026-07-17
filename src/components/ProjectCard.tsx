@@ -16,23 +16,28 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
   return (
     <motion.div
       className={styles.cardWrapper}
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ y: -6 }}
     >
       <Link to={`/projects/${project.slug}`} className={styles.card}>
         <div className={styles.imageContainer}>
-          <img 
-            src={project.coverImage} 
-            alt={project.title} 
+          <img
+            src={project.coverImage}
+            alt={project.title}
             className={styles.image}
-            loading="lazy" 
+            loading="lazy"
           />
           <div className={styles.overlay}>
-            <div className={styles.arrowCircle}>
+            <motion.div
+              className={styles.arrowCircle}
+              initial={{ scale: 0.6, opacity: 0 }}
+              whileHover={{ scale: 1, opacity: 1 }}
+            >
               <ArrowUpRight size={24} className={styles.arrow} />
-            </div>
+            </motion.div>
           </div>
         </div>
 
