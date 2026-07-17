@@ -4,12 +4,18 @@ import { FAQ } from "../components/FAQ";
 import { Transition } from "../components/Transition";
 import styles from "./About.module.css";
 
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+
 export const About: React.FC = () => {
   return (
     <Transition>
       <div className={styles.aboutPage}>
         {/* Intro Hero */}
         <section className={`${styles.aboutHero} container`}>
+          <Link to="/" className={styles.backToHome}>
+            <ArrowLeft size={14} /> Back to Home
+          </Link>
           <div className={styles.heroLayout}>
             <div className={styles.leftCol}>
               <span className={styles.sectionLabel}>01 / Profile</span>
