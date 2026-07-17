@@ -1,0 +1,149 @@
+.aboutPage {
+  width: 100%;
+}
+
+.aboutHero {
+  padding-top: 100px;
+  padding-bottom: 100px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+  .aboutHero {
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+}
+
+.heroLayout {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 80px;
+}
+
+@media (max-width: 1024px) {
+  .heroLayout {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+}
+
+.leftCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionLabel {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+
+.mainTitle {
+  font-size: 4rem;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  margin-bottom: 48px;
+}
+
+@media (max-width: 768px) {
+  .mainTitle {
+    font-size: 2.75rem;
+    margin-bottom: 32px;
+  }
+}
+
+.factsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .factsGrid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 32px;
+  }
+}
+
+.factCard {
+  display: flex;
+  flex-direction: column;
+  border-left: 2px solid var(--text-primary);
+  padding-left: 20px;
+}
+
+.factValue {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.factLabel {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.rightCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.introHeading {
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 32px;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .introHeading {
+    font-size: 1.45rem;
+  }
+}
+
+.bioText {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.actionRow {
+  margin-top: 48px;
+}
+
+.resumeBtn {
+  display: inline-flex;
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  color: var(--text-primary);
+  padding: 14px 28px;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.resumeBtn:hover {
+  border-color: var(--text-primary);
+  background-color: var(--bg-secondary);
+}
+
+.faqWrapper {
+  background-color: var(--bg-secondary);
+  padding: 40px 0;
+  border-bottom: 1px solid var(--border-color);
+}

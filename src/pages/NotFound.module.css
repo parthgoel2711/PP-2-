@@ -1,0 +1,64 @@
+.notFoundPage {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 20px;
+}
+
+.content {
+  max-width: 480px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 5rem;
+  font-weight: 800;
+  color: var(--text-tertiary);
+  line-height: 1;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 16px;
+}
+
+.description {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+.homeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  padding: 14px 28px;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.homeBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.homeBtn svg {
+  transition: transform 0.2s ease;
+}
+
+.homeBtn:hover svg {
+  transform: translateX(-2px);
+}
